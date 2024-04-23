@@ -57,3 +57,45 @@ int main() {
 
     return 0;
 }
+
+/*
+sem_t sem;
+
+void runMeFirst() {
+    sem_wait(&sem); // blocking call
+    cout << "Run me first" << endl;
+    // this_thread::sleep_for(chrono::seconds(2));
+    sem_post(&sem);
+}
+
+void runMeSecond() {
+    sem_wait(&sem); // blocking call
+    cout << "I run second" << endl;
+    // this_thread::sleep_for(chrono::seconds(2));
+    sem_post(&sem);
+}
+
+void runMeThird() {
+    sem_wait(&sem); // blocking call
+    cout << "I run third" << endl;
+    // this_thread::sleep_for(chrono::seconds(2));
+    sem_post(&sem);
+}
+
+int main() {
+    sem_init(&sem, 0, 1);
+
+    thread t1(runMeFirst);
+    thread t2(runMeSecond);
+    thread t3(runMeThird);
+
+    t1.join();
+    t2.join();
+    t3.join();
+
+    sem_destroy(&sem); // destroy the semaphore
+
+    return 0;
+}
+
+*/

@@ -41,14 +41,10 @@ void do_request(int thread_id) {
             return !msg_queue.empty();
         });  
 
-        // int message = msg_queue.front();
-        // msg_queue.pop();
-        // lock.unlock();
-
         // else get the request from the msg_queue
-        requestStructure request = msg_queue.front();
-        msg_queue.pop();
-        lock.unlock();
+        requestStructure request = msg_queue.front();  // int message = msg_queue.front();
+        msg_queue.pop(); // msg_queue.pop();
+        lock.unlock(); // lock.unlock();
 
         cout << "Thread " << thread_id << " completed request " << request.request_id << " requesting webpage " << request.page_requested << endl;
     }
@@ -86,15 +82,16 @@ Create a list of 10 web pages names as: string webPages[10] = {"google.com", "ya
 The program consists of two functions:
 
 1) first function is called listen: that will do the following steps:
-
 sleep for random number between 1-3 seconds using sleep_for instruction.
-generate a request with request_id from a counter shared, ip_address as an empty string and page_request as a random web page name from the array webPages defined above; then save the request in msg_queue.
+generate a request with request_id from a counter shared, ip_address as an empty string and 
+page_request as a random web page name from the array webPages defined above; then save the request in msg_queue.
 notify one thread to consume it.
-2) second function is called do_request that will do the following steps:
 
+2) second function is called do_request that will do the following steps:
 if the msg_queue is empty, then wait using conditional variable
 else get the request from the msg_queue
-display a message; "thread thread_id completed request request_id requesting webpage page_requested"; where thread_id is the id number of the thread, the request_id is the id number of the request and page_requested as the web page requested.
+display a message; "thread thread_id completed request request_id requesting webpage page_requested"; 
+where thread_id is the id number of the thread, the request_id is the id number of the request and page_requested as the web page requested.
 
 void producer() {
     cout << "Producer thread started" << endl;
