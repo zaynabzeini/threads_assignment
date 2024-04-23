@@ -16,7 +16,7 @@ condition_variable cv;
 queue<requestStructure> msg_queue;
 int counter;
 
-void listen(const string webPages[]) {
+void listen(string webPages[]) {
     for (int i = 1; i <= 10; ++i) {
         this_thread::sleep_for(chrono::seconds(1)); // sleep for random number between 1-3 seconds using sleep_for instruction
         {
@@ -55,13 +55,12 @@ void do_request(int thread_id) {
 }
 
 int main() {
-    thread t1(listen);
+    string webPages[10] = {"google.com", "yahoo.com", "gmail.com", "canvas.com", "submittable.com", "instagram.com", "twitter.com", "paliroots.com", "neworleansreview.com", "massreview.com",};
+    thread t1(listen, webPages);
     thread t2(do_request);
     t1.join();
     t2.join();
     cout << "Main thread finished" << endl;
-
-    string webPages[10] = {"google.com", "yahoo.com", "gmail.com", "canvas.com", "submittable.com", "instagram.com", "twitter.com", "paliroots.com", "neworleansreview.com", "massreview.com",};
 
     return 0;
 }
