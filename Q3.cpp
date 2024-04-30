@@ -3,6 +3,8 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
 
 struct requestStructure {
@@ -14,19 +16,25 @@ struct requestStructure {
 mutex mtx;
 condition_variable cv;
 queue<requestStructure> msg_queue;
-int counter;
+int counter = 0;
+int nListeners = 0;
+// int mReceivers = 0;
 
 void listen(string webPages[]) {
+    srand(time(NULL));
     for (int i = 1; i <= 10; ++i) {
-        this_thread::sleep_for(chrono::seconds(1)); // sleep for random number between 1-3 seconds using sleep_for instruction
+        int time = rand() % 3 + 1;
+        int j = rand() % 10 + 0;
+        this_thread::sleep_for(chrono::seconds(time)); // sleep for random number between 1-3 seconds using sleep_for instruction
         {
             lock_guard< mutex> lock(mtx);
             
             requestStructure request; // generate a request with
 
+            counter++;
             request.request_id = counter; // request_id from a counter shared
             request.ip_address = ""; // ip_address as an empty string
-            request.page_requested = webPages[i]; // page_request as a random web page name from the array webPages defined above
+            request.page_requested = webPages[j]; // page_request as a random web page name from the array webPages defined above
 
             msg_queue.push(request); // save the request in msg_queue
         }
@@ -37,25 +45,49 @@ void listen(string webPages[]) {
 void do_request(int thread_id) {
     while (true) {
         unique_lock< mutex> lock(mtx);
-        cv.wait(lock, []{ // if the msg_queue is empty, then wait using conditional variable
-            return !msg_queue.empty();
-        });  
+
+        // if the msg_queue is empty, then wait using conditional variable
+        if (msg_queue.empty()) {
+            cv.wait(lock);
+        }
+        // cv.wait(lock, []{ 
+        //     return !msg_queue.empty();
+        // });  
 
         // else get the request from the msg_queue
-        requestStructure request = msg_queue.front();  // int message = msg_queue.front();
-        msg_queue.pop(); // msg_queue.pop();
-        lock.unlock(); // lock.unlock();
+        else {
+            requestStructure request = msg_queue.front();  // int message = msg_queue.front();
+            msg_queue.pop(); // msg_queue.pop();
+            lock.unlock(); // lock.unlock();
+            cout << "Thread " << thread_id << " completed request " << request.request_id << " requesting webpage " << request.page_requested << endl;
 
-        cout << "Thread " << thread_id << " completed request " << request.request_id << " requesting webpage " << request.page_requested << endl;
+        }
     }
 }
 
 int main() {
     string webPages[10] = {"google.com", "yahoo.com", "gmail.com", "canvas.com", "submittable.com", "instagram.com", "twitter.com", "paliroots.com", "neworleansreview.com", "massreview.com",};
-    thread t1(listen, webPages);
-    thread t2(do_request);
-    t1.join();
-    t2.join();
+    // thread recievers[mReceivers]; // array of threads that recieve requests
+    thread listeners[nListeners]; // array of threads that search for the requested web pages
+    int i;
+    int k;
+    
+    // for (i = 0; i < mReceivers; i++) {
+    //     recievers[i] = thread(listen, webPages); // thread that recieves the requests from the clients 
+    //     for (k = 0; k < nListeners; k++) {
+    //         listeners[k] = thread(do_request, k); // thread that search for the  requested pages and send them to the client 
+    //     }
+    //     recievers[i].join();
+    //     listeners[k].join();
+    // }    
+    
+    thread reciever(listen, webPages);
+    for (k = 0; k < nListeners; k++) {
+        listeners[k] = thread(do_request, k); // thread that search for the  requested pages and send them to the client 
+        reciever.join();
+        listeners[k].join();
+    }
+
     cout << "Main thread finished" << endl;
 
     return 0;
@@ -69,7 +101,7 @@ Your C++ program should create one thread that receive the requests from the cli
 requested pages and send them to the client. This problem can be implemented using the producer-consumer problem. 
 The requests from the client are going to be a structure of the following fields:
 
-struct reqestStructure {
+struct requestStructure {
     int request_id; 
     string ip_address;
    string page_requested;
