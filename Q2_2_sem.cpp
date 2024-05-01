@@ -17,21 +17,21 @@ using namespace std;
 sem_t sem_1, sem_2, sem_3;
 
 void runMeFirst() {
-    sem_wait(&sem_1); // blocking call
+    // sem_wait(&sem_1); // blocking call
     cout << "Run me first" << endl;
+    // this_thread::sleep_for(chrono::seconds(2));
+    // sem_post(&sem_2);
+}
+
+void runMeSecond() {
+    sem_wait(&sem_1); // blocking call
+    cout << "I run second" << endl;
     // this_thread::sleep_for(chrono::seconds(2));
     sem_post(&sem_2);
 }
 
-void runMeSecond() {
-    sem_wait(&sem_2); // blocking call
-    cout << "I run second" << endl;
-    // this_thread::sleep_for(chrono::seconds(2));
-    sem_post(&sem_3);
-}
-
 void runMeThird() {
-    sem_wait(&sem_3); // blocking call
+    sem_wait(&sem_2); // blocking call
     cout << "I run second" << endl;
     // this_thread::sleep_for(chrono::seconds(2));
     sem_post(&sem_3);

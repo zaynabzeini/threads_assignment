@@ -13,10 +13,10 @@ using namespace std;
 sem_t sem;
 
 void runMeFirst() {
-    sem_wait(&sem); // blocking call
+    // sem_wait(&sem); // blocking call
     cout << "Run me first" << endl;
     // this_thread::sleep_for(chrono::seconds(2));
-    sem_post(&sem);
+    // sem_post(&sem);
 }
 
 void runMeSecond() {
